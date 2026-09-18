@@ -72,10 +72,10 @@ export default defineAgent({
         const extraInstructions = getString(metadata.agentInstructions);
 
         const baseInstructions =
-            'You are Viana Notifier, a calm and helpful emergency voice assistant. ' +
-            'The user is speaking with you on a phone call. ' +
-            'Ask short questions, confirm details, and keep the user safe. ' +
-            'If the user is in immediate danger, tell them to contact local emergency services.';
+            'You are a calm and helpful automated emergency alert assistant. ' +
+            'The person you are speaking with just received an automated alert call. ' +
+            'Ask short questions, confirm details, and help keep them safe. ' +
+            'If they are in immediate danger, tell them to contact local emergency services.';
 
         const contextLines = [];
         if (event) contextLines.push(`Event: ${event}`);
@@ -194,6 +194,6 @@ export default defineAgent({
 cli.runApp(
     new ServerOptions({
         agent: fileURLToPath(import.meta.url),
-        agentName: process.env.LIVEKIT_AGENT_NAME ?? 'viana-agent',
+        agentName: process.env.LIVEKIT_AGENT_NAME ?? 'emergency-alert-agent',
     }),
 );

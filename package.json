@@ -1,0 +1,16 @@
+{
+  "scripts": {
+    "start": "node agent-server.mjs start",
+    "agent:dev": "node agent-server.mjs dev",
+    "call": "node livekit-agent.mjs",
+    "download-files": "node agent-server.mjs download-files"
+  },
+  "dependencies": {
+    "@livekit/agents": "^1.0.3",
+    "@livekit/agents-plugin-livekit": "^1.0.2",
+    "@livekit/agents-plugin-silero": "^1.0.3",
+    "@livekit/noise-cancellation-node": "^0.1.9",
+    "dotenv": "^17.3.1",
+    "livekit-server-sdk": "^2.15.0"
+  }
+}

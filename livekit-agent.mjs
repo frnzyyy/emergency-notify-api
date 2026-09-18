@@ -32,7 +32,21 @@ function isE164PhoneNumber(value) {
   return typeof value === "string" && /^\+[1-9]\d{6,14}$/.test(value);
 }
 
-export async function triggerVianaAlertCall({
+// ----------------------------------------------------------------------------
+// MAIN ACTION: PLACE THE ALERT CALL
+// ----------------------------------------------------------------------------
+
+/**
+ * Dials a person and connects them to the AI emergency alert assistant.
+ *
+ * @param {object} options
+ * @param {string} options.phoneNumber        The person to call, e.g. "+639123456789".
+ * @param {string} [options.roomName]         A label for this call (optional; one will be made up).
+ * @param {string} [options.event]            What happened, e.g. "storm warning".
+ * @param {string} [options.location]         Where it happened, e.g. "Apartment 12B, Maple Street".
+ * @param {string} [options.agentInstructions] Optional extra guidance for the AI assistant.
+ */
+export async function makeEmergencyAlertCall({
   phoneNumber,
   roomName,
   event,
@@ -46,7 +60,7 @@ export async function triggerVianaAlertCall({
   }
 
   if (!roomName) {
-    roomName = `viana-${randomUUID()}`;
+    roomName = `alert-${randomUUID()}`;
   }
 
   console.log(`Initiating outbound call to ${phoneNumber} (room: ${roomName})...`);
@@ -74,7 +88,7 @@ export async function triggerVianaAlertCall({
 
     // 2. Dispatch the voice agent (best-effort). The call will be silent until an agent (or other participant)
     // joins the room and publishes audio.
-    const agentName = process.env.LIVEKIT_AGENT_NAME ?? "viana-agent";
+    const agentName = process.env.LIVEKIT_AGENT_NAME ?? "emergency-alert-agent";
 
     try {
       await agentDispatchClient.createDispatch(roomName, agentName, {
@@ -100,11 +114,11 @@ export async function triggerVianaAlertCall({
       roomName,
       {
         participantIdentity: `user-${phoneNumber}`,
-        participantName: "Viana Alert Recipient",
+        participantName: "Emergency Alert Recipient",
       },
     );
 
-    console.log("Call successfully handed off to Twilio!", sipParticipant);
+    console.log("Call successfully handed off to the phone provider!", sipParticipant);
     return sipParticipant;
   } catch (error) {
     console.error("Failed to initiate SIP call:", error);
@@ -117,22 +131,21 @@ const isMain =
   import.meta.url === pathToFileURL(process.argv[1]).href;
 
 if (isMain) {
-  // CLI usage (dev): `npm run call -- +639XXXXXXXXX viana-test-room`
   const [phoneArg, roomArg] = process.argv.slice(2);
-  const phoneNumber = phoneArg ?? process.env.VIANA_TEST_PHONE_NUMBER;
-  const roomName = roomArg ?? process.env.VIANA_TEST_ROOM_NAME;
+  const phoneNumber = phoneArg ?? process.env.EMERGENCY_TEST_PHONE_NUMBER;
+  const roomName = roomArg ?? process.env.EMERGENCY_TEST_ROOM_NAME;
 
   if (!phoneNumber) {
     console.error("Usage: npm run call -- <phoneNumber> [roomName]");
-    console.error("Tip: set VIANA_TEST_PHONE_NUMBER in .env for a default.");
+    console.error("Tip: set EMERGENCY_TEST_PHONE_NUMBER in .env for a default.");
     process.exitCode = 1;
   } else {
-    triggerVianaAlertCall({
+    makeEmergencyAlertCall({
       phoneNumber,
       roomName,
-      event: process.env.VIANA_EVENT,
-      location: process.env.VIANA_LOCATION,
-      agentInstructions: process.env.VIANA_AGENT_INSTRUCTIONS,
+      event: process.env.EMERGENCY_EVENT,
+      location: process.env.EMERGENCY_LOCATION,
+      agentInstructions: process.env.EMERGENCY_AGENT_INSTRUCTIONS,
     }).catch((error) => {
       console.error("Unhandled error:", error);
       process.exitCode = 1;

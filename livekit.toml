@@ -1,3 +1,7 @@
+# These two identifiers come from and belong to your LiveKit Cloud account.
+# They must stay exactly as they are - renaming them here would break the link
+# to your already-deployed project and AI agent on LiveKit Cloud.
+
 [project]
   subdomain = "viananotifier-4la5aw7a"
 
